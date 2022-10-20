@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="im_production_tree_view" model="ir.ui.view">
+        <field name="name">im.production.tree.view</field>
+        <field name="model">im.production</field>
+        <field name="arch" type="xml">
+            <tree string="Production report">
+                <header>
+                    <button name='action_report_production' type='object' string="Report production" class="btn btn-info" invisible="context.get('hide_report_production')"/>
+                    <button name='action_certificate' type='object' string="Certificate production" class="btn btn-info" invisible="context.get('hide_certification')"/>
+                </header>
+                <field name="customer_id" />
+                <field name="contract_id" />
+                <field name="work_order_id" />
+                <field name="liquidation_date" />
+                <field name="report_date" />
+                <field name="name" string="Product/Activity" invisible="1"/>
+                <field name="amount_activities" />
+                <field name="amount_products" />
+                <field name="amount_total" />
+                <field name="amount_customer" invisible="context.get('hide_customer_amont')"/>
+                <field name="state" decoration-info="state == 'noreport'" decoration-success="state == 'report'" widget="badge"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="im_production_view_form" model="ir.ui.view">
+        <field name="name">im.production.view.form</field>
+        <field name="model">im.production</field>
+        <field name="arch" type="xml">
+            <form string="Report production">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <strong>
+                                <field name="contract_id" readonly="1"/>
+                            </strong>
+                            <span class="o_stat_text" attrs="{'invisible':[('state','=','draft')]}">
+                                <![CDATA[
+                                &nbsp;
+                                ]]>-<![CDATA[
+                                &nbsp;
+                                ]]>
+                            </span>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                    <group>
+                            <field name="amount_activities" readonly="1"/>
+                            <field name="amount_products" readonly="1"/>
+                            <field name="amount_total" readonly="1"/>
+                            <field name="amount_customer" required="1" attrs="{'readonly':[('state','in',('certificate','cancel'))]}" />
+                            <field name="observation" required="1"/>
+                        </group>
+                        <group>
+                            <field name="liquidation_date" readonly="1"/>
+                            <field name="report_date" readonly="1"/>
+                        </group>
+                        
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                <field name="message_follower_ids"/>
+                <field name="activity_ids"/>
+                <field name="message_ids"/>
+            </div>
+            </form>
+            
+        </field>
+    </record>
+
+    <record id="im_production_action1" model="ir.actions.act_window">
+        <field name="name">Production report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.production</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('state','!=','certificate')]</field>
+        <field name="context">
+            {
+                'create': False,
+                "search_default_no_report":1,
+                'hide_certification': True,
+                'hide_customer_amont':True,
+
+            }
+        </field>
+    </record>
+
+    <record id="im_production_action2" model="ir.actions.act_window">
+        <field name="name">Certification</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.production</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state','in',('report','certificate'))]</field>
+        <field name="context">
+            {
+                'create': False,
+                "search_default_report":1,
+                'hide_report_production': True,
+            }
+        </field>
+    </record>
+
+    <menuitem 
+        id="im_certification_root_menu" 
+        name="Certification" 
+        parent="menu_im_root" 
+        sequence="10" 
+    />
+
+    <menuitem 
+        id="im_production_menu" 
+        name="Production report" 
+        parent="im_certification_root_menu" 
+        sequence="10" 
+        action="im_production_action1" 
+    
+    />
+
+    <menuitem 
+        id="im_certification_menu" 
+        name="Certification" 
+        parent="im_certification_root_menu" 
+        sequence="20" 
+        action="im_production_action2" 
+    />
+
+    <record id="im_production_view_form2" model="ir.ui.view">
+        <field name="name">im.production.view.form2</field>
+        <field name="model">im.production</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group>
+                       <field name="name" readonly="1"/> 
+                       <field name="work_order_id" readonly="1"/> 
+                       <field name="reason" />
+                    </group>
+                     <button name="test" string="Save" type="object" class="btn-primary"/>
+                </sheet>
+                    <footer invisible="1">
+                    </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="im_production_action2" model="ir.actions.act_window">
+        <field name="name">Production report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.production</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="im_production_view_form2" />
+        <field name="target">new</field>
+        
+    </record>
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="priority">6</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Certification" name="certification" groups="i_plus_m.group_im_user,i_plus_m.group_im_manager">
+                    <field name="price_list_certification_ids">
+                        <tree editable="bottom">
+                            <field name="contract_id"/>
+                            <field name="cost"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="im_production_filter" model="ir.ui.view">
+        <field name="name">im.production.filter</field>
+        <field name="model">im.production</field>
+        <field name="arch" type="xml">
+            <search string="Production report">
+                <field name="contrata_id"/>
+                <field name="customer_id"/>
+                <field name="contract_id"/>
+                <filter name="no_report" string="No report" domain="[('state', '=', 'noreport')]" />
+                <filter name="report" string="Report" domain="[('state', '=', 'report')]" />
+                <filter name="certificate" string="Certificate" domain="[('state', '=', 'certificate')]" />
+                <filter name="cancel" string="Cancel" domain="[('state', '=', 'cancel')]" />
+                <separator/>
+                <filter string="Liquidation date" name="filter_create_date" date="liquidation_date"/>
+                <group expand="1" string="Group By">
+                    <filter string="Contract_id" name="groupby_contracts" domain="[]" context="{'group_by': 'contract_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ot_report_production_view_tree" model="ir.ui.view">
+        <field name="name">ot.report.production.view.tree</field>
+        <field name="model">ot.report.production</field>
+        <field name="arch" type="xml">
+            <tree string="Report production">
+                <field name="contract_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="amount_activities"/>
+                <field name="amount_products"/>
+                <field name="amount_total"/>
+                <field name="amount_customer"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ot_report_production_line_action" model="ir.actions.act_window">
+        <field name="name">Report production line new</field>
+        <field name="res_model">ot.report.production.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'create': False,
+        }</field>
+    </record>
+
+    <record id="ot_report_production_line_view_tree" model="ir.ui.view">
+        <field name="name">ot.report.production.line.view.tree</field>
+        <field name="model">ot.report.production.line</field>
+        <field name="arch" type="xml">
+            <tree string="Production">
+                <field name="workorder_id" />
+                <field name="amount_activities" />
+                <field name="amount_products" />
+                <field name="amount_total" />
+                <field name="amount_customer" />
+                <field name="employee_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ot_report_production_line_view_form" model="ir.ui.view">
+        <field name="name">ot_report_production_line.view.form</field>
+        <field name="model">ot.report.production.line</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <strong>
+                                <field name="contract_id" readonly="1"/>
+                            </strong>
+                            <span class="o_stat_text">
+                                &amp;nbsp;-&amp;nbsp;
+                            </span>
+                            <field name="workorder_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="amount_activities" readonly="1"/>
+                            <field name="amount_products" readonly="1"/>
+                            <field name="amount_total" readonly="1"/>
+                            <field name="amount_customer"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ot_report_production_view_form" model="ir.ui.view">
+        <field name="name">ot.report.production.view.form</field>
+        <field name="model">ot.report.production</field>
+        <field name="arch" type="xml">
+            <form string="Report production">               
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="%(ot_report_production_line_action)d" type="action" class="oe_stat_button" icon="fa-list-alt">
+                            Production
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="contract_id" />
+                            <field name="date_start" />
+                            <field name="date_end" />
+                            <button name="action_get_workorders" class="btn btn-success" string="Get workorders" type="object"/>
+                        </group>
+                        <group>
+                            <field name="amount_activities" />
+                            <field name="amount_products" />
+                            <field name="amount_total" />
+                            <field name="amount_customer" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ot_report_production_action" model="ir.actions.act_window">
+        <field name="name">Report production new</field>
+        <field name="res_model">ot.report.production</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="ot_report_production_menu"
+        name="New report production"
+        action="ot_report_production_action"
+        parent="im_certification_root_menu" 
+        sequence="30"/>
+
+</odoo>

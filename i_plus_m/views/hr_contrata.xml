@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_contrata_view_tree" model="ir.ui.view">
+        <field name="name">hr.contract.view.tree</field>
+        <field name="model">hr.contrata</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree string="Contratas" editable="bottom">
+                <field name="ruc" readonly="1"/>
+                <field name="partner_id" readonly="1"/>
+                <field name="location_id" readonly="1" />
+                <field name="supervisor_contrata_ids" widget="many2many_tags" 
+                domain="[('state','=','up'),('company_employee_id','=',id)]" />
+                
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_contrata_action" model="ir.actions.act_window">
+        <field name="name">Contratas</field>
+        <field name="res_model">hr.contrata</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="hr_contrata_view_tree"/>
+        <field name="context">
+        {
+            'create':False
+        }
+        </field>
+    </record>
+    
+    <menuitem
+        id="hr_contract_im_menu"
+        name="Contratas"
+        action="hr_contrata_action"
+        parent="menu_im_root"
+        sequence="18"/>
+</odoo>

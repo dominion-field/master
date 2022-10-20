@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id='view_work_order_location_gmap' model='ir.ui.view'>
+        <field name="name">view.work.order.location.gmap</field>
+        <field name="model">im.work.order</field>
+        <field name="arch" type="xml">
+            
+
+            <map class="o_res_partner_map" library="geometry" string="Map" lat="liquidation_latitude" lng="liquidation_longitude" color="marker_color">
+                 <field name="name" select="1"/>
+                 
+                 <field name="liquidation_latitude"/>
+                 <field name="liquidation_longitude"/>
+                 
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_res_partner_kanban">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title oe_partner_heading">
+                                    <field name="name"/>
+                                </strong>
+                                <ul>
+                                    <li>
+                                        <b>Related Owner: </b><field name="name"/>
+                                    </li>
+                                    <li t-if="record.region_id.raw_value">
+                                        <b>Region: </b><field name="region_id"/>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </map>
+
+
+        </field>
+    </record>
+    <record id="im_work_order_maps_action" model="ir.actions.act_window">
+        <field name="name">Work order location(Map)</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.work.order</field>
+        <field name="view_mode">google_map</field>
+    </record>
+
+</odoo>

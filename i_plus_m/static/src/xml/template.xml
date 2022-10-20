@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="ListView.buttons">
+        <t t-jquery="button.o_list_export_xlsx" t-operation="after">
+           <button t-if="widget.modelName=='im.work.order'" type="button" class="btn btn-secondary o_button_to_call_wizard">
+                Work order at date
+           </button>
+        </t>
+    </t>
+
+    <!--<t t-extend="ListView.buttons">
+        <t t-jquery="button.o_list_export_xlsx" t-operation="before">
+           <button  t-if="widget.modelName=='im.pre.certification'" type="button" class="btn btn-info call_wizard_asigned_employee">
+                Report production
+           </button>
+        </t>
+    </t>-->
+</templates>
+

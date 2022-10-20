@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.hr</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="70"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="i+m" string="i+m" data-key="im">
+                    <!--groups="i_plus_m.group_im_manager"-->
+                    <h2>I+M</h2>
+                    <div class="row mt16 o_settings_container" name="im_setting_container">
+                        <div class="col-12 col-lg-6 o_setting_box" id="im_location_setting" title="Locations">
+                            <div class="o_setting_right_pane">
+                                <label for="liquidation_location_id"/>
+                                <span class="fa fa-lg fa-building-o" title="Material consumption location." role="img"
+                                      aria-label="Values set here are company-specific."
+                                      groups="i_plus_m.group_im_manager"/>
+                                <div class="row">
+                                    <div class="text-muted col-lg-8">
+                                        Set default location to consume materials after work order liquidation.
+                                    </div>
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="liquidation_location_id" required="1"
+                                               class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="im_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+
+    </record>
+
+    <menuitem id="im_menu_configuration"
+              name="Settings"
+              parent="menu_im_configuration"
+              sequence="1"
+              action="im_config_settings_action"
+    />
+</odoo>

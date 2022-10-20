@@ -1,0 +1,33 @@
+<odoo>
+    <!-- WIZARD IMPORT CONTRACTS -->
+    <record id="im_work_order_new_field_view" model="ir.ui.view">
+        <field name="name">im.work.order.new.field.view</field>
+        <field name="model">im.new.field</field>
+        <field name="arch" type="xml">
+            <form string="New field for work order" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="field_description"/>
+                            <field name="ttype"/>
+                            <field name="relation"/>
+                            <field name="contract_id"/>
+                        </group>
+                    </group>
+                    <button name="create_new_im_field" string="Create new field" type="object" class="btn-primary"/>
+                    <footer invisible="1">
+
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_order_new_field_action" model="ir.actions.act_window">
+        <field name="name">New field for work orders</field>
+        <field name="res_model">im.new.field</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

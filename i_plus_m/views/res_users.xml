@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="im_inherit_res_users" model="ir.ui.view">
+        <field name="name">im.inherit.res.users</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='references']" position="after">
+                <page name="im_aditionals" string="I+M aditionals">
+                    <group>
+                        <group>
+                            <field name="contract_to_work" invisible="1"/>
+                            <field name="allow_liquidation"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

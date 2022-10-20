@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>   
+    
+    <record id="im_customer_contracts_view_tree" model="ir.ui.view">
+        <field name="name">im.customer.contracts.view.tree</field>
+        <field name="model">customer.contracts</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="customer_id"/>
+                <button type="object" name="action_work_order_view" class="btn btn-primary" string="Select contract"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="im_contract_action" model="ir.actions.act_window">
+        <field name="name">I+M contracts</field>
+        <field name="res_model">customer.contracts</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="im_customer_contracts_view_tree"/>
+    </record>
+
+    <menuitem id="im_contract_menu"
+              name="Contracts"
+              parent="menu_im_managment"
+              sequence="8"
+              action="im_contract_action"
+    />
+
+    <record id="customer_contracts_form_im_inherit" model="ir.ui.view">
+        <field name="name">customer.contracts.form.im.inherit</field>
+        <field name="model">customer.contracts</field>
+        <field name="inherit_id" ref="customer_contracts.customer_contracts_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[1]" position="inside">
+                <page name="im_page" string="I+M">
+                    <group>
+                        <group>
+                            <field name="generate_ot_sequence_number"/>
+                            <field name="sequence_id" 
+                                attrs="{
+                                    'invisible':[('generate_ot_sequence_number','=',False)],
+                                    'requiered':[('generate_ot_sequence_number','=',True)]
+                                    }"
+                            />
+                        </group>
+                        <group>
+                            <field name="ot_allows_team"/>
+                            <field name="ot_consume_materials"/>
+                            <field name="ot_aditionals"/>
+                        </group>
+                    </group>
+                    <h4>Configurar nueva plantilla de importacion de OTs</h4>
+                    <br/>
+                        <field name="work_order_fields_ids" >
+                            <tree editable="bottom">
+                                <field name="sequence" widget='handle' />
+                                <field name="field_id" 
+                                domain="[
+                                ('model','=','im.work.order'),
+                                ('related','=',False),
+                                ('readonly','=',False)]" />
+                                <field name="allow_import"/>
+                            </tree>
+                        </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

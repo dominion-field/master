@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>    
+    <record id="work_orders_filter" model="ir.ui.view">
+        <field name="name">work.order.filter</field>
+        <field name="model">im.work.order</field>
+        <field name="arch" type="xml">
+            <search string="Work orders">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="region_id"/>
+                <field name="service_id"/>
+                <field name="work_type_id"/>
+                <filter string="Pending" name="pending" domain="[('state','=','pending')]"/>
+                <filter string="Pre-liq" name="preliq" domain="[('state','=','preliq')]"/>
+                <filter string="Liquidado" name="liq" domain="[('state','=','liq')]"/>
+                <filter string="Canceled" name="canceled" domain="[('state','=','canceled')]"/>
+                <separator/>
+                <filter string="Liquidation date" name="filter_create_date" date="liquidation_date"/>
+                <group expand="1" string="Group By">
+                    <filter string="Contracts" name="groupby_contracts" domain="[]" context="{'group_by': 'contract_id'}"/>
+                    <filter string="Technical" name="groupby_technical" domain="[]" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="im_work_order_form_view" model="ir.ui.view">
+        <field name="name">im.work.order.form.view</field>
+        <field name="model">im.work.order</field>
+        <field name="arch" type="xml">
+            <form string="Work order">
+                <header>
+                    <button name="action_liquidation" type="object" class="btn btn-primary" string="Liquidar" attrs="{'invisible':[('state','!=','pending')]}"/>
+                    <button name="action_rollback_liquidation" type="object" class="btn btn-danger" string="Rollback" attrs="{'invisible':[('state','in',('draft','pending','preliq','cancel'))]}"/>
+                    <button name="action_liquidation" type="object" class="btn btn-primary" string="Confirm liquidation" attrs="{'invisible':[('state','!=','preliq')]}"/>
+                    <button name="cancel" type="object" class="btn btn-danger" string="Cancel" groups="i_plus_im.group_im_manager,i_plus_im.group_im_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,preliq,liq,cancel"/>
+                    <field name="employee_allow_liquidation" invisible="1"/>
+                    <field name="ot_allows_team" invisible="1"/>
+                    <field name="ot_consume_materials" invisible="1"/>
+                    <field name="ot_aditionals" invisible="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_production" type="object" class="oe_stat_button" icon="fa-check-square"
+                        attrs="{'invisible':[('state','!=','liq')]}">
+                            Delete prod.
+                        </button>
+                        <button name="attachment_tree_view" icon="fa-file-text" class="oe_stat_button" type="object">
+                            <field name="documents_count" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <strong>
+                                <field name="contract_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </strong>
+                            <span class="o_stat_text" attrs="{'invisible':[('state','=','draft')]}">
+                                &amp;nbsp;-&amp;nbsp;
+                            </span>
+                            <field name="name" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
+                        </h1>
+                    </div>
+                    <group attrs="{'invisible':[('state','=','draft')]}">
+                        <group>
+                            <label for="employee_id" string="Employee"/>
+                            <div class="d-flex">
+                                <field name="employee_dni" readonly="1" force_save="1"/>
+                                <span class="o_form_label mx-3">-</span>
+                                <field name="employee_id" placeholder="Employee_id" readonly="1"/>
+                            </div>
+                            <field name="contrata_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date_up" />
+                            <field name="liquidation_date" attrs="{'invisible':[('state','!=','liq')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="information" string="Information">
+                            <group name="group_information">
+                                <group>
+                                    <label for="name" string="Work order number"/>
+                                    <div class="d-flex">
+                                        <h2><field name="name" placeholder="000001" attrs="{'readonly':[('state','!=','draft')]}"/></h2>
+                                    </div>
+                                    <field name="region_id" attrs="{'readonly':[('state','=','liq')]}" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="employee_id" attrs="{'readonly':[('state','=','liq')]}" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="asigned_user" invisible="1"/>
+                                    <field name="contrata_id" readonly="1" force_save="1" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="area_id" attrs="{'readonly':[('state','=','liq')]}" domain="[('contract_id','=',contract_id)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                                </group>
+                                <group>
+                                    <field name="service_id" attrs="{'readonly':[('state','=','liq')]}" domain="[('contract_id','=',contract_id)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="work_type_id" attrs="{'readonly':[('state','=','liq')]}" domain="[('contract_id','=',contract_id),('service_id','=',service_id)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="boleta_number" attrs="{'readonly':[('state','=','liq')]}"/>
+                                    <!--<field name="supply" attrs="{'readonly':[('state','=','liq')]}"/>-->
+                                    <field name="post" attrs="{'readonly':[('state','=','liq')]}"/>
+                                    <field name="substation_ids" attrs="{'readonly':[('state','=','liq')]}" widget="many2many_tags" domain="[('contract_id','=',contract_id)]"/>
+                                    <field name="customer_name" attrs="{'readonly':[('state','=','liq')]}"/>
+                                    <field name="phone" attrs="{'readonly':[('state','=','liq')]}"/>
+                                    <field name="address" attrs="{'readonly':[('state','=','liq')]}"/>
+                                </group> 
+                            </group>
+                        </page>
+                        <page string="Liquidation" 
+                        attrs="{
+                            'invisible':[
+                            '|',
+                            ('state','=','draft'),('ot_consume_materials','=',False)
+                            ]}" autofocus="autofocus">
+                            <field name="liq_product_ids" attrs="{'readonly':[('state','=','liq')]}">
+                                <tree editable="bottom">
+                                    <field name="product_tracking" invisible="1"/>
+                                    <field name="name" invisible="1"/>
+                                    <field name="product_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="lot_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('product_tracking','=','none')]}" />
+                                    <field name="product_uom_id"/>
+                                    <field name="product_qty" attrs="{'readonly':[('product_tracking','=','serial')]}" force_save="1"/>
+                                    <field name="quant"/>
+                                    <field name="lots_in_location" widget="many2many_tags" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group>
+                                <group>
+                                    <field name="picking_id" readonly="1" attrs="{'invisible':[('picking_id','=',False)]}"/>
+                                    <field name="down_picking_id" readonly="1" attrs="{'invisible':[('down_picking_id','=',False)]}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Down" attrs="{
+                            'invisible':[
+                            '|',
+                            ('state','=','draft'),('ot_consume_materials','=',False)
+                            ]}">
+                            <field name="down_product_ids" attrs="{'readonly':[('state','=','liq')]}">
+                                <tree editable="bottom">
+                                    <field name="product_tracking" invisible="1"/>
+                                    <field name="product_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="lot_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'readonly':[('product_tracking','=','none')]}"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="product_qty" attrs="{'readonly':[('product_tracking','=','serial')]}" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Activities" attrs="{'invisible':[('state','=','draft')]}">
+                            
+                            <field name="activity_wo_ids" attrs="{'readonly':[('state','=','liq')]}">
+                                <tree editable="bottom">
+                                    
+                                    <field name="activity_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <field name="activity_qty"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Geolocalización de liquidacion" invisible="1">
+                            
+                            <field name="coordinates"/>
+                            <field name="liquidation_latitude" invisible="1"/>
+                            <field name="liquidation_longitude" invisible="1"/>
+                            <div attrs="{'invisible':['|',('liquidation_latitude','=',0),('liquidation_longitude','=',0)]}">
+                                <iframe id="liquidation_map" width="725" height="650" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" style="border: 1px solid black"></iframe>
+                            </div>
+                            <!--
+                            <div>
+                                <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-77.01781868934633%2C-12.104856148063014%2C-77.01183199882509%2C-12.101866399996362&amp;layer=mapnik&amp;marker=-12.103361278211533%2C-77.0148253440857" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/?mlat=-12.10336&amp;mlon=-77.01483#map=18/-12.10336/-77.01483">Ver mapa más grande</a></small>
+                            </div>
+                            -->
+                        </page>
+                        <page name="aditionals" string="Aditionals" 
+                        attrs="{'invisible':[('ot_aditionals','=',False)]}">
+                            <field name="aditionals_ids">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="quantity" />
+                                    <field name="amount" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+                <script>
+                    url = document.getElementsByName('coordinates')[0].innerHTML
+                    document.getElementById('liquidation_map').src = url
+                </script>
+                <!--<script type="text/javascript" src="/i_plus_m/static/src/js/show_map.js"/>-->
+            </form>
+        </field>
+    </record>
+
+    <!--
+        im_work_order_form_view
+    -->
+    
+    <record id="inherit_work_order_customize_fields_form" model="ir.ui.view">
+        <field name="name">inherit.work.order.customize.fields.form</field>
+        <field name="model">im.work.order</field>
+        <field name="inherit_id" ref="i_plus_m.im_work_order_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_information']" position="inside">
+                <group>
+                    
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="im_work_order_tree_view" model="ir.ui.view">
+        <field name="name">im_work_order_tree_view</field>
+        <field name="model">im.work.order</field>
+        <field name="arch" type="xml">
+            <tree string="Work order">
+                <field name="name"/>
+                <field name="customer_contract_id"/>
+                <field name="contract_id"/>
+                <field name="liquidation_date"/>
+                <field name="employee_id"/>
+                <field name="contrata_id"/>
+                <field name="region_id"/>
+                <field name="customer_name"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="im_work_order_action" model="ir.actions.act_window">
+        <field name="name">Work order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.work.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_pending":1,"search_default_groupby_contracts":1}</field>
+    </record>
+    <record id="im_work_order_action_2" model="ir.actions.act_window">
+        <field name="name">Work order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">im.work.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{"search_default_pending":1,"search_default_groupby_contracts":1}</field>
+    </record>
+    
+    <record id="ot_workorder_action_server" model="ir.actions.server">
+        <field name="name">Workorder dominion</field>
+        <field name="model_id" ref="customer_contracts.model_customer_contracts"/>
+        <field name="state">code</field>
+        <field name="code">records.action_show_ots_by_contract()</field>
+    </record>
+    <menuitem id="im_work_order_server_menu" name="Work order server" parent="menu_im_managment" sequence="100" action="ot_workorder_action_server" />
+    <menuitem id="im_work_order_menu" name="Work order" parent="menu_im_managment" sequence="7" action="im_work_order_action_2" />
+</odoo>

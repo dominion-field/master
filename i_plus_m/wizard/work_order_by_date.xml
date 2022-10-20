@@ -1,0 +1,31 @@
+<odoo>
+    <record id="im_work_order_by_dates_wizard_view" model="ir.ui.view">
+        <field name="name">im.work.order.by.dates.wizard.view</field>
+        <field name="model">im.work.order.by.dates</field>
+        <field name="arch" type="xml">
+            <form string="Work order by dates" create="false" edit="false">
+                <sheet>
+                    <h2>Select dates</h2>
+                    <group>
+                        <group>
+                            <field name="date_to_filter"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <button name="get_work_orders" string="Get work orders" type="object" class="btn-primary"/>
+                    <footer invisible="1">
+
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="work_order_by_date_action" model="ir.actions.act_window">
+        <field name="name">work orders by dates</field>
+        <field name="res_model">im.work.order.by.dates</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

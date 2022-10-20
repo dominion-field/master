@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+    <record id="im_activity_action" model="ir.actions.act_window">
+        <field name="name">Actividades</field>
+        <field name="res_model">activity</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('type','!=','pro')]</field>
+        <field name="context">{'create':False}</field>
+    </record>
+    -->
+    <menuitem id="im_activities_menu"
+              name="Activities"
+              parent="menu_im_managment"
+              sequence="9"
+              action="customer_contracts.action_activities"
+    />
+
+</odoo>

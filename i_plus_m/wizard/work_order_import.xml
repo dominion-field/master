@@ -1,0 +1,115 @@
+<odoo>
+    <!-- WIZARD IMPORT CONTRACTS -->
+    <record id="im_work_order_import_wizard_view" model="ir.ui.view">
+        <field name="name">im.work.order.import.wizard.view</field>
+        <field name="model">work.order.import</field>
+        <field name="arch" type="xml">
+            <form string="Import work orders" create="false" edit="false">
+                <sheet>
+                    <h2>Import work orders</h2>
+                    <div class="oe_title">
+                        <label for="contract_id" class="oe_edit_only" string="Contract"/>
+                        <h3><field name="contract_id"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                            <field name="count_output_file" invisible="True"/>
+                            <field name="output_file" readonly="1" filename="output_name"/>
+                            
+                            <div attrs="{'invisible':[('output_error','=',False)]}">
+                                <p>Filas no cargadas:
+                                    <field name="output_error" readonly="1" filename="output_error_name"/>
+                                </p>
+                                <field name="output_error_name" invisible="True"/>
+                            </div>
+                            <button class="fa fa-download btn-default" name="download_template"
+                                    string="Download template"
+                                    type="object"/>
+                        </group>
+                        <field name="msg_validation"/>
+                    </group>
+                    <footer>
+                        <!--<button name="import_work_orders" string="Import work orders" type="object" class="btn-primary"/>-->
+                        <![CDATA[&nbsp;]]>
+                        <button name="customize_import" string="Get excel template" type="object" class="btn-primary"/>
+                        <![CDATA[&nbsp;]]>
+                        <button name="import_customize_file" string="Load file" type="object" class="btn-primary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_work_orders" model="ir.actions.act_window">
+        <field name="name">Import work orders</field>
+        <field name="res_model">work.order.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem
+            id="menu_im_work_order_import"
+            name="Import work orders"
+            action="action_import_work_orders"
+            parent="menu_im_managment"
+            sequence="10"
+    />
+
+    <record id="im_work_order_import_liquidation_view" model="ir.ui.view">
+        <field name="name">im.work.order.import.liquidation.view</field>
+        <field name="model">work.order.liquidation.import</field>
+        <field name="arch" type="xml">
+            <form string="Import work orders" create="false" edit="false">
+                <sheet>
+                    <h2>Import material-activities</h2>
+                    <!--<div class="oe_title">
+                        <label for="contract_id" class="oe_edit_only" string="Contract"/>
+                        <h3><field name="contract_id"/></h3>
+                    </div>-->
+                    <group>
+                        <group>
+                            <field name="contract_id"/>
+                            <field name="excel_file" filename="file_name"/>
+                            <p><b>Plantilla: 
+                                <a href="../i_plus_m/static/src/template/MaterialesActividades.xlsx">
+                            
+                            <i class="fa fa-download"></i>
+                            Descargar</a>
+                            </b></p>
+                            <field name="file_name" invisible="1"/>
+                            <field name="count_output_file" invisible="True"/>
+                            <field name="output_file" readonly="1" filename="output_name" invisible="1"/>
+                            <div attrs="{'invisible':[('count_output_file','=',0)]}">
+                                <p>Filas no cargadas:
+                                    <field name="output_file" readonly="1" filename="output_name" invisible="1"/>
+                                </p>
+                                <field name="output_name" invisible="True" />
+                            </div>
+                        </group>
+                        <field name="msg_validation"/>
+                    </group>
+                    <footer>
+                        <button name="import_work_orders" string="Import material-activities" type="object" class="btn-primary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_work_orders_liquidation" model="ir.actions.act_window">
+        <field name="name">Import materials - activities</field>
+        <field name="res_model">work.order.liquidation.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem
+            id="menu_im_work_order_liquidation_import"
+            name="Import materials - activities"
+            action="action_import_work_orders_liquidation"
+            parent="menu_im_managment"
+            sequence="11"
+    />
+</odoo>
