@@ -4,6 +4,7 @@ from select import select
 import string
 from odoo import models, fields
 
+#test
 class Service(models.Model):
     _name = 'im.service'
     _description = 'Services'
